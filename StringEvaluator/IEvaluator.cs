@@ -4,5 +4,4 @@
     {
         string Evaluate(string expression);
     }
-
 }
