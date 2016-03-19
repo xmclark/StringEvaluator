@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using StringEvaluator;
-using System.Text.RegularExpressions;
 
 namespace StringEvaluatorTests
 {
