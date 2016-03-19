@@ -19,35 +19,44 @@ namespace StringEvaluator
         {
             ValueType,
             OperatorType,
-            ScopeType
+            LeftScopeType,
+            RightScopeType
         }
 
-        private LinkedListNode<string> ComparePrecedence(LinkedListNode<string> CurrentToken, LinkedListNode<string> HeadToken)
+        private LinkedListNode<string> ComparePrecedence(LinkedListNode<string> CurrentToken, LinkedListNode<string> HeadToken, int localModifier)
         {
-            return (GetOperatorPrecedence(CurrentToken.Value) > GetOperatorPrecedence(HeadToken.Value)) ? CurrentToken : HeadToken;
+            return (GetOperatorPrecedence(CurrentToken.Value, localModifier) > GetOperatorPrecedence(HeadToken.Value)) ? CurrentToken : HeadToken;
+        }
+
+        private int GetOperatorPrecedence(string op, int localModifer)
+        {
+            int precedence;
+            if (operatorPrecedence.TryGetValue(op, out precedence))
+                return precedence + localModifer;
+            else
+                throw new ArgumentException("not valid operator");
         }
 
         private int GetOperatorPrecedence(string op)
         {
-            int precedence;
-            if (operatorPrecedence.TryGetValue(op, out precedence))
-                return precedence;
-            else
-                throw new ArgumentException("not valid operator");
+            return GetOperatorPrecedence(op, 0);
         }
 
         private TokenType GetTokenType(string token)
         {
             var valuePattern = @"\d+";
             var operatorPattern = @"[\+\-\*\/\^]";
-            var scopePattern = @"[\)\(]";
+            var leftScopePattern = @"\(";
+            var rightScopePattern = @"\)";
 
             if (Regex.Match(token, valuePattern).Success)
                 return TokenType.ValueType;
             else if (Regex.Match(token, operatorPattern).Success)
                 return TokenType.OperatorType;
-            else if (Regex.Match(token, scopePattern).Success)
-                return TokenType.ScopeType;
+            else if (Regex.Match(token, leftScopePattern).Success)
+                return TokenType.LeftScopeType;
+            else if (Regex.Match(token, rightScopePattern).Success)
+                return TokenType.RightScopeType;
             else
                 throw new ArgumentOutOfRangeException("invalid token");
         }
@@ -55,23 +64,50 @@ namespace StringEvaluator
         public IList<string> Execute(IList<string> expression)
         {
             var resultList = new LinkedList<string>();
-            LinkedListNode<string> HEAD = new LinkedListNode<string>(expression[0]);
-            resultList.AddFirst(HEAD);
+            LinkedListNode<string> HEAD = null;
 
-            for (var i = 1; i < expression.Count; i++)
+            var localPrecedence = 0;
+
+            //resultList.AddFirst(HEAD);
+
+            for (var i = 0; i < expression.Count; i++)
             {
                 var token = new LinkedListNode<string>(expression[i]);
 
                 switch (GetTokenType(expression[i]))
                 {
-                    // IF token is value type
+                    // IF token is scope type (parenthesis)
+                    case TokenType.LeftScopeType:
+                        // elevate precedence
+                        localPrecedence += 4;
+                        break;
+
+                    case TokenType.RightScopeType:
+                        localPrecedence -= 4;
+                        HEAD = null;
+                        break;
+
+                    // ELSE IF token is value type
                     case TokenType.ValueType:
-                        resultList.AddBefore(HEAD, token);
+                        if (HEAD == null)
+                        {
+                            resultList.AddLast(token);
+                            HEAD = token;
+                        }
+                        else    
+                            resultList.AddBefore(HEAD, token);
                         break;
 
                     // ELSE IF token is operator type
                     case TokenType.OperatorType:
                         
+                        if (HEAD == null)
+                        {
+                            resultList.AddLast(token);
+                            HEAD = token;
+                            break;
+                        }
+
                         switch (GetTokenType(HEAD.Value))
                         {
                             // IF HEAD is a value type
@@ -80,13 +116,14 @@ namespace StringEvaluator
                                 HEAD = token;  // attach HEAD to newest token
                                 break;
 
-                            // ELSE IF HEAD is a operator type
+                            // ELSE IF HEAD is an operator type
                             case TokenType.OperatorType:
                                 // IF token has higher precedence than HEAD
-                                if (ComparePrecedence(token, HEAD) == token)
+                                if (ComparePrecedence(token, HEAD, localPrecedence) == token)
                                     resultList.AddBefore(HEAD, token);
                                 else
                                     resultList.AddAfter(HEAD, token);
+
                                 HEAD = token;
                                 break;
                         }
