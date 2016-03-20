@@ -7,6 +7,24 @@ The implementation is fundamentally _extensible_ because I use interface injecti
 virtual method `Execute()`. The `Evaluator` class gets a couple of these interfaces
 for cleaning, parsing, and evaluating a string expression. Since those interfaces
 are implemented separately from the main class, they are loosely coupled with the
-`Evaluator`.
+`Evaluator`. An example implementation is:
+```
+// parser implemenation
+Parser : IAlgorithm {...}
+
+// validator implementation
+Validator : IAlgorithm {...}
+
+// solver implementation
+Solver : IAlgoritm {...}
+
+var parser = new Parser();
+var validator = new Validator();
+var solver = new Solver();
+
+var evaluator = new Evaluator(validator, parser, solver);
+```
 
 ## My Algorithm
+
+
