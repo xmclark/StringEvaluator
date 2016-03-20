@@ -26,5 +26,11 @@ var evaluator = new Evaluator(validator, parser, solver);
 ```
 
 ## My Algorithm
-
+I use an alternative algorithm of my own design (but I take no credit because somebody
+else probably made it already) to implement the parser. Instead of a shunting-yard
+algorithm, I implement an algorithm using a linked list and a special pointer called
+HEAD. Since `Evaluator` is extensible, I can easily implement a ShuntingYard class
+another day! This algorithm creates a linked list and assigns a pointer to node in
+linked list. The pointer holds the precedence state information. The tokens are 
+iterated over in an IList and appended or inserted into the result linked list.
 
