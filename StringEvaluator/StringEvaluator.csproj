@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="EntryPoint.cs" />
     <Compile Include="Evaluator.cs" />
+    <Compile Include="ExpressionValidator.cs" />
     <Compile Include="IAlgorithm.cs" />
     <Compile Include="IEvaluator.cs" />
     <Compile Include="MyParser.cs" />
