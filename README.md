@@ -33,4 +33,4 @@ HEAD. Since `Evaluator` is extensible, I can easily implement a ShuntingYard cla
 another day! This algorithm creates a linked list and assigns a pointer to node in
 linked list. The pointer holds the precedence state information. The tokens are 
 iterated over in an IList and appended or inserted into the result linked list.
-
+ 
