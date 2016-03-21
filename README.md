@@ -60,3 +60,6 @@ My algorithm lives in the class `MyParser`. I use an alternative algorithm of my
         - Add token AFTER the HEAD
       - Set HEAD to point at token
 
+## My Validator Algorithm:
+
+The validator takes the role of the cleaner in the Evaluator signature. This validator simply checks and is not rock solid It uses LINQ query to check for an equal number of left and right parenthesis. It also uses a regular expression to ensure that binary operators have appropriate tokens to the left and right. 
